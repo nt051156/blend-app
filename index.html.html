@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ja" style="overflow-x:hidden;width:100%;">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BLEND | シングルオイル図鑑</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+:root{--bg:#F7F4EF;--surface:#FFFFFF;--border:#E0D8CC;--text:#2C2416;--sub:#7A6E5F;--accent:#5C7A3E;--ok:#4A7C2F;--caution:#C8861A;--ng:#B03030;--tag-bg:#EDF3E8;--tag-text:#3D6628;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent;overflow-x:hidden;width:100%;}
+
+/* ヘッダー */
+header{background:var(--text);padding:0;position:sticky;top:0;z-index:100;width:100%;overflow:hidden;}
+.header-inner{padding:12px 16px;display:flex;align-items:baseline;gap:10px;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#F7F4EF;letter-spacing:3px;}
+.logo-sub{font-size:11px;color:#A09080;letter-spacing:1px;}
+
+/* タブ */
+.tabs{display:flex;border-top:1px solid rgba(255,255,255,0.1);}
+.tab-btn{flex:1;padding:10px 0;font-size:12px;font-weight:700;color:#A09080;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'Noto Sans JP',sans-serif;letter-spacing:0.5px;transition:color 0.15s,border-color 0.15s;}
+.tab-btn.active{color:#F7F4EF;border-bottom-color:#5C7A3E;}
+
+/* 検索 */
+.search-bar{padding:12px 14px 10px;position:sticky;top:89px;z-index:90;background:var(--bg);border-bottom:1px solid var(--border);width:100%;overflow:hidden;}
+.search-bar input{width:100%;padding:10px 16px;border:1.5px solid var(--border);border-radius:24px;font-size:16px;background:var(--surface);color:var(--text);outline:none;font-family:'Noto Sans JP',sans-serif;-webkit-appearance:none;}
+.search-bar input:focus{border-color:var(--accent);}
+.count-bar{font-size:11px;color:var(--sub);padding:5px 16px 2px;}
+
+/* カードグリッド */
+.card-grid{padding:8px 10px 80px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;min-width:0;}
+.oil-card{background:var(--surface);border-radius:14px;border:1.5px solid var(--border);padding:13px 11px 11px;cursor:pointer;-webkit-tap-highlight-color:transparent;min-width:0;overflow:hidden;}
+.oil-card:active{background:#EDF3E8;}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:7px;gap:4px;}
+.card-names{flex:1;min-width:0;}
+.card-ja{font-size:14px;font-weight:700;color:var(--accent);line-height:1.3;word-break:break-all;}
+.card-en{font-family:'Cormorant Garamond',serif;font-size:12px;color:#5A4E40;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:400;letter-spacing:0.3px;}
+.dil-badge{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;border-radius:50%;font-size:10px;font-weight:700;flex-shrink:0;}
+.dil-N{background:#DDF0D0;color:#2D6A1E;}
+.dil-S{background:#FFF0C0;color:#8A5E00;}
+.dil-D{background:#FFD8C8;color:#8A2000;}
+.card-benefits{display:flex;flex-direction:column;gap:3px;margin-bottom:9px;}
+.card-benefit{font-size:11px;color:var(--sub);padding:3px 7px;background:var(--bg);border-radius:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.card-safety{display:flex;gap:4px;align-items:center;}
+.safety-pill{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:700;border:1px solid;}
+.sp-ok{color:var(--ok);background:#EDF6E8;border-color:#B8DCAA;}
+.sp-warn{color:var(--caution);background:#FFF6E0;border-color:#E8C870;}
+.sp-ng{color:var(--ng);background:#FFF0F0;border-color:#EEAAAA;}
+.card-note{font-size:10px;color:#B0A090;margin-left:auto;white-space:nowrap;}
+.empty-state{text-align:center;padding:60px 20px;color:var(--sub);font-size:14px;grid-column:1/-1;}
+.empty-state .e-icon{font-size:36px;display:block;margin-bottom:10px;}
+
+/* レシピタブ */
+.recipe-wrap{padding:8px 12px 80px;display:none;}
+.recipe-wrap.active{display:block;}
+.recipe-category{margin-bottom:20px;}
+.recipe-cat-title{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase;padding:12px 4px 6px;border-bottom:1px solid var(--border);margin-bottom:10px;}
+.recipe-card{background:var(--surface);border-radius:14px;border:1.5px solid var(--border);padding:14px;margin-bottom:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.recipe-card:active{background:#EDF3E8;}
+.recipe-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.recipe-emoji{font-size:24px;flex-shrink:0;}
+.recipe-name{font-size:15px;font-weight:700;color:var(--text);}
+.recipe-usage-tag{font-size:10px;padding:2px 8px;border-radius:8px;background:var(--tag-bg);color:var(--tag-text);border:1px solid #C8DFB8;margin-left:auto;white-space:nowrap;}
+.recipe-desc{font-size:12px;color:var(--sub);margin-bottom:10px;line-height:1.6;}
+.recipe-oils{display:flex;flex-wrap:wrap;gap:5px;}
+.recipe-oil-chip{font-size:11px;padding:3px 10px;border-radius:10px;background:var(--bg);border:1px solid var(--border);color:var(--text);}
+.recipe-oil-ratio{font-weight:700;color:var(--accent);margin-left:3px;}
+
+/* ビルダータブ */
+.builder-wrap{padding:8px 12px 100px;display:none;}
+.builder-wrap.active{display:block;}
+.builder-section{background:var(--surface);border-radius:14px;border:1.5px solid var(--border);padding:14px;margin-bottom:12px;}
+.builder-title{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--accent);margin-bottom:10px;}
+.oil-select-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;max-height:200px;overflow-y:auto;-webkit-overflow-scrolling:touch;width:100%;}
+.oil-select-btn{padding:12px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:12px;color:var(--text);cursor:pointer;text-align:left;font-family:'Noto Sans JP',sans-serif;-webkit-tap-highlight-color:transparent;min-height:44px;}
+.oil-select-btn.selected{border-color:var(--accent);background:var(--tag-bg);color:var(--accent);font-weight:700;}
+.oil-select-btn:active{background:#E0EDD8;}
+.builder-selected{display:flex;flex-direction:column;gap:10px;}
+.builder-oil-row{display:flex;align-items:center;gap:10px;}
+.builder-oil-name{font-size:13px;font-weight:700;color:var(--text);min-width:80px;flex:1;}
+.builder-ratio-ctrl{display:flex;align-items:center;gap:8px;}
+.ratio-btn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);-webkit-tap-highlight-color:transparent;line-height:1;}
+.ratio-btn:active{background:var(--bg);}
+.ratio-val{font-size:16px;font-weight:700;color:var(--accent);min-width:20px;text-align:center;}
+.builder-remove{width:26px;height:26px;border-radius:50%;border:1px solid #E0D8CC;background:none;color:var(--sub);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.total-input-row{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.total-label{font-size:13px;color:var(--text);flex:1;}
+.total-input{width:80px;padding:7px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-weight:700;text-align:center;font-family:'Noto Sans JP',sans-serif;color:var(--text);background:var(--surface);}
+.total-unit{font-size:12px;color:var(--sub);}
+.result-list{display:flex;flex-direction:column;gap:6px;}
+.result-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--tag-bg);border-radius:10px;}
+.result-oil{font-size:13px;color:var(--tag-text);font-weight:500;}
+.result-drops{font-size:18px;font-weight:700;color:var(--accent);}
+.result-drops span{font-size:12px;font-weight:400;color:var(--sub);}
+.result-pct{font-size:11px;color:var(--sub);margin-left:6px;}
+.builder-hint{font-size:11px;color:var(--sub);padding:8px 4px;line-height:1.7;}
+.load-recipe-btn{width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--accent);background:none;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;margin-bottom:8px;-webkit-tap-highlight-color:transparent;}
+.load-recipe-btn:active{background:var(--tag-bg);}
+
+/* モーダル */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(44,36,22,0.55);z-index:200;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);width:100%;max-width:600px;max-height:92vh;border-radius:20px 20px 0 0;overflow-y:auto;padding:0 0 48px;animation:slideUp 0.22s ease;-webkit-overflow-scrolling:touch;}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;}
+.modal-close-row{position:sticky;top:0;display:flex;justify-content:flex-end;padding:8px 14px;background:var(--surface);z-index:10;}
+.modal-close-btn{background:none;border:1.5px solid var(--border);border-radius:20px;padding:10px 20px;font-size:13px;color:var(--sub);cursor:pointer;font-family:'Noto Sans JP',sans-serif;min-height:44px;}
+.modal-body{padding:0 18px;}
+.modal-title-en{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--sub);margin-bottom:2px;}
+.modal-title-ja{font-size:28px;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1.2;}
+.scent-desc{background:var(--bg);border-left:3px solid var(--accent);padding:10px 14px;font-size:13px;line-height:1.7;border-radius:0 8px 8px 0;margin-bottom:16px;}
+.note-tag{display:inline-block;background:var(--text);color:#F7F4EF;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:6px;vertical-align:middle;}
+.section-label{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase;margin:18px 0 8px;}
+.benefits-list{display:flex;flex-direction:column;gap:5px;}
+.benefit-item{font-size:13px;padding:7px 12px;background:var(--tag-bg);border-radius:8px;color:var(--tag-text);line-height:1.4;}
+.usage-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.usage-item{text-align:center;padding:10px 4px;border-radius:10px;border:1.5px solid var(--border);font-size:11px;}
+.usage-item .u-icon{font-size:20px;display:block;margin-bottom:3px;}
+.usage-item.active{border-color:var(--accent);background:var(--tag-bg);}
+.usage-item.inactive{opacity:0.3;}
+.safety-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+.safety-item{text-align:center;padding:12px 4px;border-radius:10px;border:1.5px solid var(--border);}
+.safety-item .s-icon{font-size:22px;display:block;margin-bottom:3px;}
+.safety-item .s-label{font-size:11px;color:var(--sub);}
+.safety-item .s-value{font-size:18px;font-weight:700;display:block;margin:2px 0;}
+.safety-item .s-desc{font-size:10px;}
+.safety-item.s-ok{border-color:var(--ok);background:#EDF6E8;}
+.safety-item.s-warn{border-color:var(--caution);background:#FFF6E0;}
+.safety-item.s-ng{border-color:var(--ng);background:#FFF0F0;}
+.s-ok .s-value{color:var(--ok);}
+.s-warn .s-value{color:var(--caution);}
+.s-ng .s-value{color:var(--ng);}
+.caution-box{background:#FFF8F0;border:1.5px solid #E8C89A;border-radius:10px;padding:12px 14px;font-size:12px;line-height:1.8;color:#6A4010;margin-top:8px;}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:6px;}
+.tag{font-size:12px;padding:4px 12px;border-radius:14px;background:#F0EDE6;color:var(--sub);border:1px solid var(--border);}
+.blend-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.blend-chip{font-size:12px;padding:11px 16px;border-radius:16px;background:var(--text);color:#F7F4EF;cursor:pointer;border:none;font-family:'Noto Sans JP',sans-serif;min-height:44px;}
+.blend-chip:active{background:var(--accent);}
+
+/* レシピ詳細モーダル */
+.recipe-modal-oils{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.rmo-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--tag-bg);border-radius:10px;}
+.rmo-name{font-size:14px;font-weight:700;color:var(--tag-text);}
+.rmo-ratio{font-size:13px;color:var(--sub);}
+.use-in-builder-btn{width:100%;padding:13px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;margin-top:8px;}
+.use-in-builder-btn:active{background:#4A6830;}
+
+.warn-box{background:#FFF6E0;border:1.5px solid #E8C870;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#7A5800;}
+.warn-text{display:block;margin-bottom:6px;}
+.warn-btn{padding:6px 14px;border-radius:8px;border:1.5px solid #C8861A;background:#FFF6E0;color:#7A5800;font-size:12px;font-weight:700;cursor:pointer;min-height:44px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <span class="logo">BLEND</span>
+    <span class="logo-sub">シングルオイル図鑑</span>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-catalog" onclick="switchTab('catalog')">図鑑</button>
+    <button class="tab-btn" id="tab-recipe" onclick="switchTab('recipe')">レシピ</button>
+    <button class="tab-btn" id="tab-builder" onclick="switchTab('builder')">ビルダー</button>
+  </div>
+</header>
+
+<div class="search-bar">
+  <input type="text" id="searchInput" placeholder="おなか・頭痛・ねむれない・花粉…" autocomplete="off" autocorrect="off" spellcheck="false">
+</div>
+<div class="count-bar" id="countBar"></div>
+
+<!-- 図鑑 -->
+<div id="view-catalog">
+  <div class="card-grid" id="cardGrid"></div>
+</div>
+
+<!-- レシピ -->
+<div id="view-recipe" style="display:none;padding:8px 12px 80px;width:100%;overflow-x:hidden;"></div>
+
+<!-- ビルダー -->
+<div id="view-builder" style="display:none;padding:8px 12px 100px;width:100%;overflow-x:hidden;">
+  <div class="builder-section">
+    <div class="builder-title">STEP 1 　オイルを選ぶ（最大5種）</div>
+    <div class="oil-select-grid" id="oilSelector"></div>
+  </div>
+  <div class="builder-section">
+    <div class="builder-title">STEP 2 　比率を決める</div>
+    <div class="builder-selected" id="builderSelected"></div>
+  </div>
+  <div class="builder-section">
+    <div class="builder-title">STEP 3 　合計滴数を入力</div>
+    <div class="total-input-row">
+      <span class="total-label">ディフューザーに入れる総滴数</span>
+      <input class="total-input" type="number" id="totalDrops" value="6" min="1" max="30">
+      <span class="total-unit">滴</span>
+    </div>
+    <div class="builder-hint">※芳香浴は通常6〜8滴。塗布用ロールオンは10〜15滴が目安</div>
+  </div>
+  <div class="builder-section">
+    <div class="builder-title">計算結果</div>
+    <div id="resultArea"></div>
+  </div>
+</div>
+
+<!-- 図鑑モーダル -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modalContent">
+    <div class="modal-handle"></div>
+    <div class="modal-close-row"><button class="modal-close-btn" onclick="closeModal()">閉じる ✕</button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- レシピモーダル -->
+<div class="modal-overlay" id="recipeModal">
+  <div class="modal" id="recipeModalContent">
+    <div class="modal-handle"></div>
+    <div class="modal-close-row"><button class="modal-close-btn" onclick="closeModal()">閉じる ✕</button></div>
+    <div class="modal-body" id="recipeModalBody"></div>
+  </div>
+</div>
+
+<script>
+
+var OILS = [{"id": "single_001", "ja": "ラベンダー", "en": "Lavender", "note": "ミドル", "dil": "N", "desc": "おだやかで優しい花の香り。緊張をほぐし安らぎをもたらす", "benefits": ["リラックス・緊張緩和", "睡眠サポート", "肌を整える・ニキビ・やけど", "イライラ・不安の緩和", "抗菌・防腐"], "blends": ["フランキンセンス", "ベルガモット", "ゼラニウム", "シダーウッド", "セレニティー"], "caution": "直接肌につけてもOK。乳幼児は薄めて使用", "diffuse": true, "topical": true, "internal": true, "housework": true, "pregnancy": "○", "kids": "○", "scenes": ["睡眠前", "リラックス", "バスタイム", "育児", "ヨガ"], "emotions": ["眠れない", "イライラ", "不安", "緊張", "疲れた"]}, {"id": "single_002", "ja": "ペパーミント", "en": "Peppermint", "note": "トップ〜ミドル", "dil": "S", "desc": "突き抜けるような清涼感。メントール豊富でフレッシュ", "benefits": ["集中力・覚醒サポート", "頭痛・頭がスッキリ", "消化サポート", "クールダウン・体の熱感", "呼吸サポート"], "blends": ["レモン", "ローズマリー", "ラベンダー", "ユーカリプタス", "オレンジ"], "caution": "敏感肌は希釈推奨。目や粘膜に触れないよう注意", "diffuse": true, "topical": true, "internal": true, "housework": true, "pregnancy": "△", "kids": "△", "scenes": ["デスクワーク", "運動前", "ドライブ", "朝", "勉強"], "emotions": ["眠い", "集中したい", "頭痛", "だるい", "リフレッシュ"]}, {"id": "single_003", "ja": "レモン", "en": "Lemon", "note": "トップ", "dil": "N", "desc": "フレッシュで明るい柑橘の香り。気分を前向きにする", "benefits": ["気分転換・ポジティブ", "空気の浄化・消臭", "集中力サポート", "デトックスウォーター", "掃除・クレンジング"], "blends": ["ペパーミント", "ローズマリー", "ユーカリプタス", "ティーツリー", "オレンジ"], "caution": "光毒性あり。使用後の日光暴露に注意", "diffuse": true, "topical": true, "internal": true, "housework": true, "pregnancy": "○", "kids": "○", "scenes": ["朝", "デスクワーク", "掃除", "来客前", "キッチン"], "emotions": ["気分を上げたい", "スッキリしたい", "集中したい"]}, {"id": "single_004", "ja": "フランキンセンス", "en": "Frankincense", "note": "ベース", "dil": "N", "desc": "温かみのある深い樹脂の香り。幸福感・充足感をもたらす", "benefits": ["美容・アンチエイジング・肌を整える", "瞑想・精神的な安定", "免疫サポート", "炎症をやわらげる", "集中・グラウンディング"], "blends": ["ラベンダー", "ベルガモット", "コパイバ", "サンダルウッド", "ミルラ"], "caution": "非常に安全性が高い。直接肌に使用可", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "○", "kids": "○", "scenes": ["瞑想", "スキンケア", "夜", "ヨガ", "リラックス"], "emotions": ["心を落ち着けたい", "不安", "精神的に整えたい", "美容"]}, {"id": "single_005", "ja": "ティーツリー（メラルーカ）", "en": "Tea Tree / Melaleuca", "note": "トップ〜ミドル", "dil": "N", "desc": "清涼感のあるクリーンな香り。90種類以上の成分を含む", "benefits": ["肌トラブル・ニキビ", "抗菌・抗ウイルス", "爪のケア", "頭皮・ヘアケア", "空気の浄化"], "blends": ["レモン", "ラベンダー", "ユーカリプタス", "オレガノ"], "caution": "内服不可。目や粘膜を避ける", "diffuse": true, "topical": true, "internal": false, "housework": true, "pregnancy": "△", "kids": "○", "scenes": ["スキンケア", "ヘアケア", "掃除", "季節の変わり目"], "emotions": ["肌荒れ", "ニキビ", "清潔にしたい", "抗菌したい"]}, {"id": "single_006", "ja": "ワイルドオレンジ", "en": "Wild Orange", "note": "トップ", "dil": "N", "desc": "フレッシュで甘く爽やかな柑橘の香り。明るい雰囲気をつくる", "benefits": ["気分UP・ポジティブ", "活力チャージ", "空気の浄化・消臭", "掃除・クレンジング", "飲料添加"], "blends": ["シナモン", "クローブ", "ベルガモット", "フランキンセンス", "イランイラン"], "caution": "光毒性あり。使用後の日光暴露に注意", "diffuse": true, "topical": true, "internal": true, "housework": true, "pregnancy": "○", "kids": "○", "scenes": ["朝", "家族団らん", "気分転換", "掃除"], "emotions": ["気分を上げたい", "落ち込み", "活力がほしい"]}, {"id": "single_007", "ja": "ユーカリプタス", "en": "Eucalyptus", "note": "トップ〜ミドル", "dil": "S", "desc": "スッキリと清涼感のある薬草的な香り", "benefits": ["呼吸サポート・鼻づまり", "花粉・季節の変わり目", "空気の浄化", "集中力サポート", "筋肉のリラックス"], "blends": ["ペパーミント", "レモン", "ティーツリー", "ラベンダー"], "caution": "敏感肌は希釈推奨。内服不可", "diffuse": true, "topical": true, "internal": false, "housework": true, "pregnancy": "△", "kids": "△", "scenes": ["朝", "デスクワーク", "掃除", "花粉シーズン"], "emotions": ["鼻づまり", "呼吸しにくい", "リフレッシュしたい", "花粉がつらい"]}, {"id": "single_008", "ja": "コパイバ", "en": "Copaiba", "note": "ベース", "dil": "N", "desc": "穏やかで甘みのある樹脂系の香り。フランキンセンスに似た穏やかさ", "benefits": ["美容・肌ケア", "炎症サポート", "神経系のサポート", "フランキンセンスとの相乗効果", "全身の健康維持"], "blends": ["フランキンセンス", "ラベンダー", "サンダルウッド"], "caution": "非常に安全性が高い", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["スキンケア", "夜", "瞑想", "リラックス"], "emotions": ["美容", "心身を整えたい", "炎症", "疲れ"]}, {"id": "single_009", "ja": "ゼラニウム", "en": "Geranium", "note": "ミドル", "dil": "S", "desc": "薔薇に似た甘くグリーンな花の香り", "benefits": ["ホルモンバランス・女性ケア", "美容・肌を整える", "気分の安定", "むくみサポート", "ストレス緩和"], "blends": ["ラベンダー", "ベルガモット", "クラリセージ", "ローズ", "イランイラン"], "caution": "敏感肌の方は希釈推奨", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "○", "kids": "○", "scenes": ["スキンケア", "バスタイム", "女性ケア", "リラックス"], "emotions": ["PMS", "ホルモンバランス", "美容", "気分の波", "むくみ"]}, {"id": "single_010", "ja": "ベルガモット", "en": "Bergamot", "note": "トップ〜ミドル", "dil": "S", "desc": "爽やかで甘みのある上品な柑橘の香り。アールグレイの香り", "benefits": ["不安・緊張の緩和", "気分をリフトアップ", "自信・前向きな気持ち", "肌のケア", "睡眠の質向上"], "blends": ["フランキンセンス", "ゼラニウム", "ラベンダー", "イランイラン"], "caution": "光毒性あり。使用後の日光暴露に注意。敏感肌は希釈推奨", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["夕方", "リラックス", "バスタイム", "瞑想"], "emotions": ["不安", "気分が落ちている", "自信がほしい", "ストレス"]}, {"id": "single_011", "ja": "シダーウッド", "en": "Cedarwood", "note": "ベース", "dil": "S", "desc": "深みのある温かい木の香り。大地に根を張るような安定感", "benefits": ["深い睡眠・グラウンディング", "感情の安定", "頭皮・ヘアケア", "虫除け補助", "瞑想・集中"], "blends": ["ラベンダー", "ベチバー", "フランキンセンス", "サンダルウッド"], "caution": "内服不可。敏感肌は希釈推奨", "diffuse": true, "topical": true, "internal": false, "housework": false, "pregnancy": "✕", "kids": "△", "scenes": ["睡眠前", "瞑想", "ヘアケア", "グラウンディング"], "emotions": ["眠れない", "不安定", "落ち着きたい", "グラウンディング"]}, {"id": "single_012", "ja": "ローズマリー", "en": "Rosemary", "note": "ミドル", "dil": "N", "desc": "シャープでクリアなハーブの香り。頭をシャキッとさせる", "benefits": ["集中力・記憶力サポート", "育毛・頭皮ケア", "血行促進", "筋肉のリラックス", "料理のアクセント"], "blends": ["ペパーミント", "レモン", "バジル"], "caution": "妊娠中・てんかん・高血圧の方は使用を控えること", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "✕", "kids": "○", "scenes": ["デスクワーク", "勉強", "朝", "ヘアケア", "料理"], "emotions": ["集中したい", "覚醒したい", "記憶力アップ", "やる気がでない"]}, {"id": "single_013", "ja": "イランイラン", "en": "Ylang Ylang", "note": "ミドル〜ベース", "dil": "N", "desc": "甘く濃厚なトロピカルフラワーの香り。ジャスミンに似た官能的な香り", "benefits": ["ロマンティックな気分", "ストレス・緊張の緩和", "肌・ヘアケア", "心拍を整える", "自己肯定感"], "blends": ["ベルガモット", "ゼラニウム", "ローズ", "サンダルウッド", "オレンジ"], "caution": "香りが強いので少量から。低血圧の方は注意", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "○", "scenes": ["バスタイム", "入浴", "夜", "ロマンス", "女性ケア"], "emotions": ["緊張", "ストレス", "女性らしくなりたい", "ロマンチックな気分"]}, {"id": "single_014", "ja": "クラリセージ", "en": "Clary Sage", "note": "ミドル", "dil": "N", "desc": "ナッツのような甘みのある落ち着いたハーブの香り", "benefits": ["女性ホルモンバランス", "PMS・生理痛サポート", "更年期サポート", "ストレス・不安緩和", "睡眠の質向上"], "blends": ["ゼラニウム", "ラベンダー", "ベルガモット", "クラリカーム"], "caution": "妊娠中は絶対に使用しないこと。アルコールとの相互作用あり", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "✕", "kids": "△", "scenes": ["女性ケア", "睡眠前", "リラックス", "バスタイム"], "emotions": ["PMS", "生理痛", "ホルモンバランス", "更年期", "気分の波"]}, {"id": "single_015", "ja": "ベチバー", "en": "Vetiver", "note": "ベース", "dil": "N", "desc": "深い土のような重厚な香り。グラウンディングの代名詞", "benefits": ["深い睡眠・グラウンディング", "集中・ADHD的な散漫さへのサポート", "不安・パニック感の緩和", "感情の安定", "スキンケア"], "blends": ["ラベンダー", "シダーウッド", "フランキンセンス", "サンダルウッド"], "caution": "粘度が高いので希釈するか温めてから使用するとよい", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["睡眠前", "瞑想", "グラウンディング", "夜"], "emotions": ["眠れない", "不安定", "頭の中がうるさい", "落ち着きたい"]}, {"id": "single_016", "ja": "レモングラス", "en": "Lemongrass", "note": "トップ〜ミドル", "dil": "S", "desc": "レモンより力強く爽やかなシトラスグリーンの香り", "benefits": ["リフレッシュ・気分転換", "虫除けサポート", "消化サポート", "筋肉・関節のサポート", "抗菌・空間浄化"], "blends": ["オレンジ", "ラベンダー", "コリアンダー"], "caution": "敏感肌は必ず希釈。光毒性に注意", "diffuse": true, "topical": true, "internal": true, "housework": true, "pregnancy": "○", "kids": "○", "scenes": ["夕方", "切り替え", "リフレッシュ", "アウトドア"], "emotions": ["気分を切り替えたい", "リフレッシュしたい", "やる気スイッチ"]}, {"id": "single_017", "ja": "ジンジャー", "en": "Ginger", "note": "ミドル", "dil": "S", "desc": "スパイシーで温かみのある生姜の香り", "benefits": ["消化サポート・吐き気", "体を温める・冷え対策", "乗り物酔いサポート", "血行促進", "免疫サポート"], "blends": ["ペパーミント", "ダイジェストゼン", "ワイルドオレンジ"], "caution": "敏感肌は希釈推奨", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "○", "scenes": ["冷え対策", "食後", "乗り物", "冬", "料理"], "emotions": ["吐き気", "冷え", "消化が悪い", "乗り物酔い"]}, {"id": "single_018", "ja": "グレープフルーツ", "en": "Grapefruit", "note": "トップ", "dil": "N", "desc": "スッキリと爽快な柑橘の香り。ダイエット・デトックスの定番", "benefits": ["気分をスッキリ・ポジティブ", "代謝サポート・ダイエット", "むくみ・リンパのサポート", "朝のエネルギーチャージ", "食欲コントロール"], "blends": ["ペパーミント", "ベルガモット", "スリム＆サシー"], "caution": "光毒性あり。一部薬との相互作用あり（グレープフルーツ注意薬）", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["朝", "運動前", "ダイエット", "気分転換"], "emotions": ["気分を上げたい", "むくみ", "ダイエット", "活力がほしい"]}, {"id": "single_019", "ja": "サンダルウッド", "en": "Sandalwood", "note": "ベース", "dil": "N", "desc": "深みのある甘くクリーミーなウッディの香り。瞑想の定番", "benefits": ["美容・スキンケア・エイジング", "瞑想・精神的な安定", "感情のバランス", "睡眠サポート", "グラウンディング"], "blends": ["フランキンセンス", "ラベンダー", "ローズ", "ベチバー"], "caution": "非常に安全性が高い希少オイル", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "○", "kids": "○", "scenes": ["スキンケア", "瞑想", "夜", "リラックス", "ヨガ"], "emotions": ["美容", "精神的な安定", "瞑想", "落ち着きたい"]}, {"id": "single_020", "ja": "マジョラム", "en": "Marjoram", "note": "ミドル", "dil": "N", "desc": "スパイシーで心が温まる、落ち着いたハーブの香り", "benefits": ["深い睡眠サポート", "筋肉の緊張をほぐす", "孤独感・不安の緩和", "心臓・血圧サポート", "料理のアクセント"], "blends": ["ラベンダー", "セレニティー", "ベルガモット"], "caution": "妊娠中は医師に相談", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "✕", "kids": "○", "scenes": ["睡眠前", "運動後", "リラックス", "料理"], "emotions": ["眠れない", "孤独感", "筋肉痛", "緊張"]}, {"id": "single_021", "ja": "ヒノキ", "en": "Hinoki", "note": "ミドル〜ベース", "dil": "N", "desc": "日本のヒノキそのものの清々しく深みのある木の香り", "benefits": ["リラックス・日本の森林浴", "グラウンディング", "空気の浄化", "精神的な安定", "スキンケア"], "blends": ["シダーウッド", "サイプレス", "ラベンダー", "森の音"], "caution": "日本限定商品。内服不可", "diffuse": true, "topical": true, "internal": false, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["和のリラックス", "瞑想", "お風呂", "グラウンディング"], "emotions": ["森林浴がしたい", "落ち着きたい", "日本の香り", "リフレッシュ"]}, {"id": "single_022", "ja": "オレガノ", "en": "Oregano", "note": "ミドル", "dil": "D", "desc": "力強くスパイシーなハーブの香り。ピザを連想させる", "benefits": ["免疫サポート（強力）", "抗菌・抗ウイルス", "消化サポート", "季節の変わり目", "料理のアクセント"], "blends": ["レモン", "ティーツリー", "オンガード"], "caution": "刺激が非常に強い。原液使用は絶対NG。必ず希釈", "diffuse": true, "topical": true, "internal": true, "housework": true, "pregnancy": "✕", "kids": "✕", "scenes": ["免疫強化", "季節の変わり目", "料理"], "emotions": ["風邪っぽい", "免疫を高めたい", "季節の変わり目"]}, {"id": "single_023", "ja": "クローブ", "en": "Clove", "note": "ミドル", "dil": "D", "desc": "スパイシーでホット、ほんのり苦い木の香り", "benefits": ["免疫・抗菌サポート", "口腔ケア・歯痛", "体を温める", "抗酸化", "オンガードの主成分"], "blends": ["オレンジ", "シナモン", "オンガード"], "caution": "刺激が強い。原液使用禁止", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "✕", "scenes": ["秋冬", "免疫強化", "ティータイム", "口腔ケア"], "emotions": ["体を温めたい", "免疫を高めたい", "季節の変わり目"]}, {"id": "single_024", "ja": "ライム", "en": "Lime", "note": "トップ", "dil": "S", "desc": "フレッシュでシャープな爽やかシトラスの香り", "benefits": ["気分をリフレッシュ", "ポジティブな気持ち", "免疫サポート", "飲料への添加", "掃除・空気の浄化"], "blends": ["ペパーミント", "レモン", "ワイルドオレンジ"], "caution": "光毒性あり。敏感肌は希釈推奨", "diffuse": true, "topical": true, "internal": true, "housework": true, "pregnancy": "△", "kids": "△", "scenes": ["ドライブ", "朝", "リフレッシュ", "掃除"], "emotions": ["リフレッシュしたい", "気分転換", "スッキリしたい"]}, {"id": "single_025", "ja": "ミルラ", "en": "Myrrh", "note": "ベース", "dil": "N", "desc": "深く温かみのある樹脂系の香り。古代から神聖な儀式に使われてきた", "benefits": ["スキンケア・アンチエイジング", "口腔ケア・歯茎", "精神的な深い安定", "免疫サポート", "フランキンセンスとの相乗効果"], "blends": ["フランキンセンス", "サンダルウッド", "ラベンダー"], "caution": "妊娠中は絶対禁止", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "✕", "kids": "△", "scenes": ["スキンケア", "瞑想", "口腔ケア", "夜"], "emotions": ["精神的に深く安定したい", "美容", "エイジングケア"]}, {"id": "single_026", "ja": "サイプレス", "en": "Cypress", "note": "ミドル", "dil": "N", "desc": "スッキリとした針葉樹の清々しい香り。森の中にいるような感覚", "benefits": ["呼吸サポート・のどを整える", "血液循環・むくみ", "筋肉のこりをほぐす", "グラウンディング・集中", "デトックス"], "blends": ["ラベンダー", "レモン", "フランキンセンス", "サンダルウッド", "ヒノキ"], "caution": "内服不可", "diffuse": true, "topical": true, "internal": false, "housework": false, "pregnancy": "△", "kids": "○", "scenes": ["リフレッシュ", "空間演出", "運動後", "瞑想"], "emotions": ["気分転換", "むくみ", "呼吸しにくい", "グラウンディング"]}, {"id": "single_027", "ja": "ヘリクリサム", "en": "Helichrysum", "note": "ミドル", "dil": "N", "desc": "感情をやわらげ呼吸を深くするといわれる独特の花の香り", "benefits": ["肌の再生・傷跡・あざ", "抗炎症・痛みの緩和", "アンチエイジング・美容", "神経系サポート", "感情の癒し"], "blends": ["ラベンダー", "フランキンセンス", "ローズ", "ゲラニウム"], "caution": "希少オイルで高価。直接肌に使用可", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["スキンケア", "ケガのアフター", "アンチエイジング"], "emotions": ["傷跡が気になる", "美容", "アンチエイジング", "感情を癒したい"]}, {"id": "single_028", "ja": "メリッサ", "en": "Melissa", "note": "トップ〜ミドル", "dil": "N", "desc": "レモンバームとも呼ばれる。フレッシュでやさしい柑橘ハーブの香り", "benefits": ["不安・パニック感の緩和", "気分を明るくする", "免疫サポート", "季節の変わり目", "睡眠の質向上"], "blends": ["ラベンダー", "フランキンセンス", "ベルガモット"], "caution": "採取量が少なく非常に高価なオイル。ドテラ最高価格帯の一つ", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["不安時", "リラックス", "睡眠前", "免疫強化"], "emotions": ["不安", "パニック", "気分が落ちている", "心を落ち着けたい"]}, {"id": "single_029", "ja": "ローマンカモミール", "en": "Roman Chamomile", "note": "ミドル", "dil": "N", "desc": "甘くリンゴのような穏やかな花の香り。非常に優しくおだやか", "benefits": ["子どもの癇癪・落ち着かせる", "不安・過敏なストレス緩和", "肌のかぶれ・敏感肌ケア", "睡眠サポート", "感情の波を整える"], "blends": ["ラベンダー", "ゼラニウム", "ベルガモット", "フランキンセンス"], "caution": "子どもにも使いやすい優しいオイル", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "○", "kids": "△", "scenes": ["子育て", "睡眠前", "敏感肌ケア", "リラックス"], "emotions": ["不安", "過敏", "子どもが落ち着かない", "眠れない"]}, {"id": "single_030", "ja": "ジュニパーベリー", "en": "Juniper Berry", "note": "ミドル", "dil": "N", "desc": "ジンの原料。フレッシュでウッディなすっきりとした香り", "benefits": ["デトックス・老廃物の排出", "むくみ・腎臓サポート", "ストレス・緊張緩和", "空気の浄化", "皮膚の浄化"], "blends": ["サイプレス", "ゼラニウム", "ゼンドクライン"], "caution": "長期多量使用は避ける", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "✕", "kids": "△", "scenes": ["デトックス", "むくみケア", "リフレッシュ"], "emotions": ["デトックスしたい", "むくみ", "スッキリしたい"]}, {"id": "single_031", "ja": "パチョリ", "en": "Patchouli", "note": "ベース", "dil": "N", "desc": "深くムスキーでエキゾチックな土の香り。香水・洗剤にも使われる", "benefits": ["グラウンディング・感情の安定", "スキンケア・抗炎症", "香水のベースノート", "抗菌・防虫", "むくみ・血行サポート"], "blends": ["フランキンセンス", "ベチバー", "サンダルウッド", "ベルガモット"], "caution": "香りが強いので少量から使用", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["運動前", "スキンケア", "アウトドア", "グラウンディング", "掃除"], "emotions": ["疲れ", "肌荒れ", "むくみ", "清潔にしたい", "落ち着きたい"]}, {"id": "single_032", "ja": "バジル", "en": "Basil", "note": "トップ〜ミドル", "dil": "N", "desc": "フレッシュでスパイシーなハーブの香り。料理との親和性が高い", "benefits": ["集中力・精神的な疲労", "筋肉痛・こり", "消化サポート", "料理のアクセント", "気持ちを落ち着かせる"], "blends": ["ローズマリー", "ペパーミント", "レモン"], "caution": "敏感肌は希釈推奨", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "✕", "kids": "△", "scenes": ["食後", "勉強", "料理", "運動後", "デスクワーク"], "emotions": ["料理", "筋肉痛", "吐き気", "疲れ", "食欲"]}, {"id": "single_033", "ja": "スペアミント", "en": "Spearmint", "note": "トップ", "dil": "S", "desc": "ペパーミントより甘くマイルドなミントの香り。子どもにも使いやすい", "benefits": ["集中・リフレッシュ（マイルド版）", "消化サポート・吐き気", "口臭ケア", "子ども向けのペパーミント代替", "気分転換"], "blends": ["ラベンダー", "レモン", "ペパーミント"], "caution": "敏感肌・子どもは希釈推奨", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "○", "scenes": ["食後", "日常", "勉強", "朝", "デスクワーク"], "emotions": ["吐き気", "気分を上げたい", "リフレッシュしたい", "集中したい", "口臭"]}, {"id": "single_034", "ja": "ウィンターグリーン", "en": "Wintergreen", "note": "トップ", "dil": "S", "desc": "湿布・サロンパスに似た清涼感のあるメンソール系の香り", "benefits": ["筋肉・関節の痛みサポート", "頭痛サポート", "ディープブルーの主成分", "スポーツ後のケア", "血行促進"], "blends": ["ペパーミント", "ディープブルー", "ヘリクリサム"], "caution": "サリチル酸メチルを大量に含む。内服・過剰使用は危険", "diffuse": true, "topical": true, "internal": false, "housework": false, "pregnancy": "✕", "kids": "✕", "scenes": ["運動後", "運動前"], "emotions": ["血行促進", "筋肉痛", "疲れ"]}, {"id": "single_035", "ja": "ターメリック", "en": "Turmeric", "note": "ミドル", "dil": "N", "desc": "ウコンそのもの。スパイシーで温かみのあるオリエンタルな香り", "benefits": ["抗炎症・抗酸化", "関節サポート", "消化サポート", "免疫サポート", "肌のトーンを整える"], "blends": ["ジンジャー", "フランキンセンス", "コパイバ"], "caution": "衣類に付着すると落ちにくい", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["食後", "季節の変わり目", "食事"], "emotions": ["免疫を高めたい", "吐き気", "消化が悪い", "風邪っぽい"]}, {"id": "single_036", "ja": "ダグラスファー", "en": "Douglas Fir", "note": "トップ〜ミドル", "dil": "N", "desc": "クリスマスツリーのような爽やかな針葉樹の香り", "benefits": ["呼吸サポート", "グラウンディング・集中", "空気の浄化", "ポジティブな気分", "筋肉のサポート"], "blends": ["シダーウッド", "フランキンセンス", "ラベンダー", "森の音"], "caution": "内服不可", "diffuse": true, "topical": true, "internal": false, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["勉強", "朝", "季節の変わり目", "運動後", "デスクワーク"], "emotions": ["前向きになりたい", "筋肉痛", "リフレッシュしたい", "気分を上げたい", "疲れ"]}, {"id": "single_037", "ja": "シベリアンファー", "en": "Siberian Fir", "note": "トップ〜ミドル", "dil": "N", "desc": "北欧の森を思わせるクリーンな針葉樹の香り", "benefits": ["呼吸サポート", "筋肉・関節のサポート", "グラウンディング", "ストレス解消", "空気の清浄"], "blends": ["ユーカリプタス", "ラベンダー", "ダグラスファー"], "caution": "内服不可", "diffuse": true, "topical": true, "internal": false, "housework": true, "pregnancy": "△", "kids": "△", "scenes": ["運動後", "グラウンディング", "自然", "季節の変わり目"], "emotions": ["筋肉痛", "疲れ", "鼻づまり", "落ち着きたい", "呼吸しにくい"]}, {"id": "single_038", "ja": "グリーンマンダリン", "en": "Green Mandarin", "note": "トップ", "dil": "S", "desc": "未熟なマンダリンから抽出。青くフレッシュな柑橘の香り", "benefits": ["気分のリフトアップ", "ストレス・不安の緩和", "子どもにも使いやすいシトラス", "消化サポート", "睡眠の質向上"], "blends": ["ラベンダー", "ベルガモット", "イランイラン"], "caution": "敏感肌は希釈推奨", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "○", "scenes": ["食後", "朝", "睡眠前", "気分転換", "リラックス"], "emotions": ["吐き気", "気分を上げたい", "リフレッシュしたい", "睡眠", "不安"]}, {"id": "single_039", "ja": "ブラックペッパー", "en": "Black Pepper", "note": "ミドル", "dil": "S", "desc": "なじみ深い胡椒のスパイシーな香り。温かみと刺激を持つ", "benefits": ["体を温める・血行促進", "消化サポート", "禁煙サポート（渇望を抑える）", "筋肉・関節サポート", "料理のアクセント"], "blends": ["ジンジャー", "ユーカリプタス", "フランキンセンス"], "caution": "敏感肌は必ず希釈", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["食後", "運動前", "日常", "料理", "運動後"], "emotions": ["料理", "疲れ", "筋肉痛", "吐き気", "食欲"]}, {"id": "single_040", "ja": "カルダモン", "en": "Cardamom", "note": "ミドル", "dil": "N", "desc": "ミントのようでスパイシーな甘みを持つ。チャイのような香り", "benefits": ["呼吸サポート（シネオール高含有）", "消化・吐き気のサポート", "口臭ケア", "気分をスッキリさせる", "料理（チャイ・カレー）"], "blends": ["ジンジャー", "ペパーミント", "シナモン"], "caution": "非常に安全性が高い", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["食後", "日常", "料理", "朝", "季節の変わり目"], "emotions": ["料理", "吐き気", "気分を上げたい", "リフレッシュしたい", "食欲"]}, {"id": "single_041", "ja": "カシア", "en": "Cassia", "note": "ミドル〜ベース", "dil": "D", "desc": "シナモンに似た甘くウォームなスパイシーの香り（中国産シナモン）", "benefits": ["体を温める", "免疫サポート", "消化サポート", "血糖値のバランスサポート", "抗菌"], "blends": ["オレンジ", "クローブ", "オンガード"], "caution": "皮膚への刺激が非常に強い。原液使用は絶対NG", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "✕", "kids": "✕", "scenes": ["食後", "季節の変わり目", "食事", "冬", "掃除"], "emotions": ["免疫を高めたい", "吐き気", "冷え", "清潔にしたい", "抗菌したい"]}, {"id": "single_042", "ja": "コリアンダー", "en": "Coriander", "note": "ミドル", "dil": "N", "desc": "パクチーの種から抽出。やさしく甘みのあるスパイシーハーブの香り", "benefits": ["消化サポート", "解毒・デトックス", "気分の安定", "抗酸化", "料理（中東・アジア料理）"], "blends": ["レモングラス", "ジンジャー", "レモン"], "caution": "シラントロ（コリアンダーの葉）と別商品", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["食後", "料理", "朝", "キッチン", "気分転換"], "emotions": ["料理", "リフレッシュしたい", "気分を上げたい", "吐き気", "食欲"]}, {"id": "single_043", "ja": "シラントロ", "en": "Cilantro", "note": "トップ〜ミドル", "dil": "N", "desc": "パクチーの葉から抽出。好み分かれるフレッシュハーブの香り", "benefits": ["デトックス・重金属の排出サポート", "消化サポート", "抗酸化", "料理のアクセント", "空気の浄化"], "blends": ["ライム", "レモン", "ゼンドクライン"], "caution": "コリアンダー（種）と別商品", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["食後", "料理", "朝", "キッチン", "食事"], "emotions": ["料理", "吐き気", "食欲", "スッキリしたい", "消化が悪い"]}, {"id": "single_044", "ja": "フェンネル", "en": "Fennel", "note": "ミドル", "dil": "N", "desc": "甘くアニスに似た独特のハーブの香り", "benefits": ["消化サポート・便秘", "体のデトックス・浄化", "女性ホルモンバランス", "母乳の出をサポート", "ストレス性の胃痛"], "blends": ["ジンジャー", "ペパーミント", "ダイジェストゼン"], "caution": "妊娠中・てんかんは絶対NG", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "✕", "kids": "△", "scenes": ["食後", "朝", "女性ケア", "食事", "バスタイム"], "emotions": ["吐き気", "スッキリしたい", "PMS", "消化が悪い", "ホルモンバランス"]}, {"id": "single_045", "ja": "タイム", "en": "Thyme", "note": "トップ〜ミドル", "dil": "D", "desc": "鮮明でスパイシーな地中海ハーブの香り", "benefits": ["強力な抗菌・免疫サポート", "呼吸器サポート", "抗酸化", "料理のアクセント", "皮膚・頭皮のケア"], "blends": ["ラベンダー", "レモン", "オレガノ"], "caution": "刺激が強いオイル。必ず希釈", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "✕", "kids": "✕", "scenes": ["掃除", "キッチン", "料理", "季節の変わり目"], "emotions": ["免疫を高めたい", "料理", "食欲", "清潔にしたい", "鼻づまり"]}, {"id": "single_046", "ja": "ピンクペッパー", "en": "Pink Pepper", "note": "トップ〜ミドル", "dil": "S", "desc": "フルーティでスパイシーな明るい香り。黒胡椒より優しく甘みがある", "benefits": ["代謝サポート", "気分をポジティブに", "ストレス緩和", "抗酸化", "血行促進"], "blends": ["ベルガモット", "グレープフルーツ", "ラベンダー"], "caution": "敏感肌は希釈推奨", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["運動前", "気分転換", "朝"], "emotions": ["前向きになりたい", "疲れ", "リフレッシュしたい", "気分を上げたい", "ダイエット"]}, {"id": "single_047", "ja": "アーボビテ", "en": "Arborvitae", "note": "ミドル〜ベース", "dil": "N", "desc": "「命の木」の深くクリーンな森の香り。ヒノキチオール含有", "benefits": ["強力な抗菌・防腐", "グラウンディング", "免疫サポート", "虫除け・防虫", "木材の保護（アロマ用途）"], "blends": ["シダーウッド", "ヒノキ", "フランキンセンス"], "caution": "内服不可。妊娠中禁止", "diffuse": true, "topical": true, "internal": false, "housework": false, "pregnancy": "✕", "kids": "✕", "scenes": ["季節の変わり目", "アウトドア", "グラウンディング", "掃除", "自然"], "emotions": ["免疫を高めたい", "清潔にしたい", "落ち着きたい", "抗菌したい", "グラウンディング"]}, {"id": "single_048", "ja": "ブルータンジー", "en": "Blue Tansy", "note": "ミドル", "dil": "S", "desc": "鮮やかなブルー色。甘くフローラルな花の香り", "benefits": ["抗炎症・肌の鎮静", "アレルギー・肌荒れのサポート", "精神的な安定・不安緩和", "ディープブルーの成分", "美容・スキンケア"], "blends": ["ラベンダー", "フランキンセンス", "ゼラニウム"], "caution": "内服不可。色素が衣類等につく場合あり", "diffuse": true, "topical": true, "internal": false, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["夜", "リラックス", "朝", "スキンケア"], "emotions": ["肌荒れ", "不安", "緊張", "美容", "エイジングケア"]}, {"id": "single_049", "ja": "スパイクナード", "en": "Spikenard", "note": "ベース", "dil": "N", "desc": "深くアーシーでやや動物的なムスクの香り。古代から神聖視", "benefits": ["深い瞑想・精神的安定", "不眠・深い睡眠", "感情の解放", "肌のケア・抗炎症", "グラウンディング"], "blends": ["フランキンセンス", "ベチバー", "サンダルウッド"], "caution": "内服不可。希少なオイル", "diffuse": true, "topical": true, "internal": false, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["睡眠前", "瞑想", "ヨガ", "グラウンディング", "夜"], "emotions": ["睡眠", "瞑想", "精神的に整えたい", "落ち着きたい", "グラウンディング"]}, {"id": "single_050", "ja": "プチグレン", "en": "Petitgrain", "note": "トップ〜ミドル", "dil": "N", "desc": "ビターオレンジの葉と小枝から抽出。花と木が混ざった爽やかな香り", "benefits": ["不安・ストレスの緩和", "神経系を落ち着かせる", "気分のバランス", "スキンケア（脂性肌）", "香水のミドルノート"], "blends": ["ラベンダー", "ベルガモット", "イランイラン", "ゼラニウム"], "caution": "内服不可。比較的安全", "diffuse": true, "topical": true, "internal": false, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["朝", "スキンケア", "リラックス", "気分転換", "夜"], "emotions": ["リフレッシュしたい", "肌荒れ", "気分を上げたい", "不安", "緊張"]}, {"id": "single_051", "ja": "タンジェリン", "en": "Tangerine", "note": "トップ", "dil": "N", "desc": "甘くジューシーなみかんの香り。ワイルドオレンジより甘くやわらか", "benefits": ["明るい気分・幸福感", "子どもにも使いやすい", "消化サポート", "緊張緩和", "スキンケア（ストレッチマーク）"], "blends": ["ラベンダー", "ベルガモット", "グリーンマンダリン"], "caution": "光毒性注意", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "△", "kids": "○", "scenes": ["食後", "朝", "スキンケア", "気分転換", "食事"], "emotions": ["吐き気", "気分を上げたい", "肌荒れ", "リフレッシュしたい", "消化が悪い"]}, {"id": "single_052", "ja": "ブラックスプルース", "en": "Black Spruce", "note": "ミドル", "dil": "N", "desc": "カナダの北方林の深くクリーンな針葉樹の香り", "benefits": ["副腎サポート・疲労回復", "グラウンディング", "呼吸サポート", "ホルモンバランス", "精神的な強さ・自信"], "blends": ["フランキンセンス", "シダーウッド", "ラベンダー"], "caution": "内服不可", "diffuse": true, "topical": true, "internal": false, "housework": false, "pregnancy": "△", "kids": "△", "scenes": ["朝", "季節の変わり目", "女性ケア", "グラウンディング", "仕事"], "emotions": ["疲労", "鼻づまり", "落ち着きたい", "呼吸しにくい", "グラウンディング"]}, {"id": "single_053", "ja": "レモンユーカリ", "en": "Lemon Eucalyptus", "note": "トップ〜ミドル", "dil": "S", "desc": "レモンとユーカリが合わさったような爽やかな香り", "benefits": ["虫除け（天然成分・高効果）", "呼吸サポート", "リフレッシュ", "空気の浄化", "皮膚の炎症緩和"], "blends": ["レモン", "ユーカリプタス", "テラアーマー"], "caution": "内服不可。敏感肌は希釈推奨", "diffuse": true, "topical": true, "internal": false, "housework": true, "pregnancy": "○", "kids": "○", "scenes": ["気分転換", "朝", "季節の変わり目", "アウトドア"], "emotions": ["リフレッシュしたい", "鼻づまり", "呼吸しにくい", "スッキリしたい", "虫除け"]}, {"id": "single_054", "ja": "ハワイアンサンダルウッド", "en": "Hawaiian Sandalwood", "note": "ベース", "dil": "N", "desc": "通常のサンダルウッドより軽くフローラルなニュアンスを持つ", "benefits": ["美容・スキンケア（サンダルウッドと同様）", "瞑想・精神的な安定", "感情のバランス", "睡眠サポート", "グラウンディング"], "blends": ["フランキンセンス", "ラベンダー", "ローズ", "ベチバー"], "caution": "サステナブル採取。インドサンダルウッドと使い分け可", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "○", "kids": "○", "scenes": ["朝", "スキンケア", "睡眠前", "瞑想", "ヨガ"], "emotions": ["肌荒れ", "睡眠", "瞑想", "精神的に整えたい", "落ち着きたい"]}, {"id": "single_055", "ja": "シナモン（バーク）", "en": "Cinnamon Bark", "note": "ベース", "dil": "D", "desc": "スパイシーで甘く温かいシナモンそのものの香り", "benefits": ["体を温める・冷え対策", "免疫・抗菌サポート", "血糖値のバランスサポート", "消化サポート", "ムードを高める"], "blends": ["オレンジ", "クローブ", "カシア", "オンガード"], "caution": "皮膚への刺激が最強レベル。原液は絶対NG", "diffuse": true, "topical": true, "internal": true, "housework": false, "pregnancy": "✕", "kids": "✕", "scenes": ["食後", "季節の変わり目", "食事", "冬", "寒い"], "emotions": ["免疫を高めたい", "吐き気", "冷え", "清潔にしたい", "抗菌したい"]}];
+var SYNONYMS = {
+  'おなか':['消化','吐き気','胃','腸','便秘','下痢','食欲'],
+  'お腹':['消化','吐き気','胃','腸'],
+  'はきけ':['吐き気','消化','乗り物酔い'],
+  '吐き気':['吐き気','消化','乗り物酔い'],
+  'ずつう':['頭痛','頭がスッキリ'],
+  '頭痛':['頭痛','頭がスッキリ','集中'],
+  'かふん':['花粉','呼吸','季節の変わり目'],
+  '花粉':['花粉','呼吸','鼻づまり'],
+  'はな':['鼻づまり','呼吸','花粉'],
+  'むくみ':['むくみ','デトックス','リンパ','血行'],
+  'だるい':['疲れ','疲労','だるい','活力'],
+  'つかれ':['疲れ','疲労','だるい','活力'],
+  '疲れ':['疲れ','疲労','だるい','活力'],
+  'ねむれない':['眠れない','睡眠','グラウンディング'],
+  '眠れない':['眠れない','睡眠'],
+  'ねむい':['眠い','覚醒','集中'],
+  'いらいら':['イライラ','緊張','ストレス','不安'],
+  'イライラ':['イライラ','緊張','ストレス'],
+  'ふあん':['不安','緊張','ストレス','グラウンディング'],
+  '不安':['不安','緊張','ストレス'],
+  'きんちょう':['緊張','不安','ストレス','リラックス'],
+  '緊張':['緊張','不安','ストレス'],
+  'ストレス':['ストレス','緊張','不安','リラックス'],
+  'きずあと':['傷跡','肌の再生','炎症'],
+  'ニキビ':['ニキビ','肌トラブル','抗菌'],
+  'にきび':['ニキビ','肌トラブル','抗菌'],
+  'はだ':['肌','スキンケア','美容'],
+  'びよう':['美容','スキンケア','エイジング'],
+  '美容':['美容','スキンケア','アンチエイジング'],
+  'けむし':['虫除け','防虫'],
+  'むしよけ':['虫除け','防虫','アウトドア'],
+  '虫除け':['虫除け','防虫'],
+  'かぜ':['免疫','季節の変わり目','抗菌','呼吸'],
+  '風邪':['免疫','季節の変わり目','抗菌'],
+  'めんえき':['免疫','抗菌','季節の変わり目'],
+  'ひえ':['冷え','体を温める','血行'],
+  '冷え':['冷え','体を温める','血行促進'],
+  'こり':['筋肉痛','筋肉','こり','血行'],
+  '肩こり':['筋肉痛','筋肉','こり','血行'],
+  'きんにく':['筋肉','筋肉痛','こり'],
+  'せいりつう':['生理痛','PMS','ホルモン'],
+  '生理痛':['生理痛','PMS','ホルモンバランス'],
+  'PMS':['PMS','生理痛','ホルモンバランス','女性'],
+  'こうねんき':['更年期','ホルモンバランス','女性'],
+  '更年期':['更年期','ホルモンバランス'],
+  'しゅうちゅう':['集中','覚醒','記憶力'],
+  '集中':['集中','覚醒','記憶力','デスクワーク'],
+  'きおく':['記憶力','集中','覚醒'],
+  'そうじ':['掃除','抗菌','浄化'],
+  '掃除':['掃除','抗菌','空気の浄化'],
+  'りょうり':['料理','キッチン','消化'],
+  'むずむず':['花粉','アレルギー','呼吸'],
+  'かゆい':['肌','炎症','アレルギー'],
+  'やけど':['肌','炎症','ラベンダー'],
+  'だいえっと':['ダイエット','代謝','むくみ'],
+  'ダイエット':['ダイエット','代謝','食欲'],
+  'やるき':['やる気','活力','集中'],
+  'やる気':['やる気','活力','集中'],
+  'かみ':['ヘアケア','頭皮'],
+  'かみのけ':['ヘアケア','頭皮'],
+  'ヘアケア':['ヘアケア','頭皮','育毛'],
+  'めいそう':['瞑想','グラウンディング','精神的'],
+  '瞑想':['瞑想','グラウンディング'],
+  'ゆっくりしたい':['リラックス','睡眠','ストレス'],
+  'きぶんてんかん':['気分転換','リフレッシュ','ポジティブ'],
+  'ポジティブ':['ポジティブ','気分UP','活力'],
+  'こうくう':['口腔','口臭','歯'],
+  'はぐき':['口腔','歯茎','口臭'],
+  'ちちがでない':['母乳','女性','ホルモン'],
+  'にんしん':['妊婦','妊娠'],
+  'こども':['子供','子育て'],
+  'あかちゃん':['子供','子育て','育児'],
+  'ふくじん':['副腎','疲労','エネルギー'],
+  'きんえん':['禁煙'],
+  'かんせつ':['関節','炎症','筋肉'],
+  'ねつ':['発熱','クールダウン','体の熱感']
+};
+var RECIPES = [
+  {id:'r01', name:'おやすみブレンド', category:'睡眠・リラックス', emoji:'🌙',
+   desc:'深い眠りに誘う定番ブレンド。就寝前にディフューズまたは足裏に塗布',
+   usage:'diffuse',
+   oils:[{name:'ラベンダー',ratio:3},{name:'シダーウッド',ratio:2},{name:'ベチバー',ratio:1}]},
+  {id:'r02', name:'ヒーリングルーム', category:'睡眠・リラックス', emoji:'🕯️',
+   desc:'安らぎの空間づくりに。読書・入浴・就寝前の芳香浴に最適',
+   usage:'diffuse',
+   oils:[{name:'ベルガモット',ratio:2},{name:'ラベンダー',ratio:1},{name:'フランキンセンス',ratio:1}]},
+  {id:'r03', name:'緊張をほぐす', category:'睡眠・リラックス', emoji:'🌸',
+   desc:'ストレスや緊張感をやわらげる。首・肩への塗布にも',
+   usage:'both',
+   oils:[{name:'ラベンダー',ratio:3},{name:'ゼラニウム',ratio:2},{name:'ベルガモット',ratio:1}]},
+  {id:'r04', name:'グラウンディング', category:'睡眠・リラックス', emoji:'🌳',
+   desc:'不安・ざわざわした気持ちを落ち着ける。足裏・胸元への塗布',
+   usage:'both',
+   oils:[{name:'フランキンセンス',ratio:2},{name:'サンダルウッド',ratio:2},{name:'ベチバー',ratio:1}]},
+  {id:'r05', name:'バスタイム癒し', category:'睡眠・リラックス', emoji:'🛁',
+   desc:'入浴時のボディオイルに。女性ホルモンバランスをサポート',
+   usage:'topical',
+   oils:[{name:'ゼラニウム',ratio:3},{name:'ラベンダー',ratio:2},{name:'イランイラン',ratio:1}]},
+  {id:'r06', name:'朝の目覚め', category:'集中・エネルギー', emoji:'☀️',
+   desc:'スッキリした朝のスタートに。ディフューザーで部屋に広げる',
+   usage:'diffuse',
+   oils:[{name:'ペパーミント',ratio:3},{name:'レモン',ratio:3},{name:'ローズマリー',ratio:2}]},
+  {id:'r07', name:'デスクワーク集中', category:'集中・エネルギー', emoji:'💻',
+   desc:'仕事・勉強中の集中力サポート。デスクのディフューザーに',
+   usage:'diffuse',
+   oils:[{name:'ローズマリー',ratio:3},{name:'ペパーミント',ratio:2},{name:'レモン',ratio:2}]},
+  {id:'r08', name:'やる気チャージ', category:'集中・エネルギー', emoji:'⚡',
+   desc:'気分が落ちているときに。明るくポジティブな気持ちへ',
+   usage:'diffuse',
+   oils:[{name:'ワイルドオレンジ',ratio:4},{name:'ペパーミント',ratio:2},{name:'フランキンセンス',ratio:1}]},
+  {id:'r09', name:'ドライブ覚醒', category:'集中・エネルギー', emoji:'🚗',
+   desc:'長距離ドライブの眠気対策に。車内ディフューザーやハンカチに',
+   usage:'diffuse',
+   oils:[{name:'ペパーミント',ratio:3},{name:'ユーカリプタス',ratio:2},{name:'レモン',ratio:2}]},
+  {id:'r10', name:'PMSサポート', category:'女性ケア', emoji:'🌺',
+   desc:'生理前のイライラ・不調をサポート。下腹部やわき腹に塗布',
+   usage:'both',
+   oils:[{name:'クラリセージ',ratio:3},{name:'ゼラニウム',ratio:2},{name:'ラベンダー',ratio:2}]},
+  {id:'r11', name:'むくみケア', category:'女性ケア', emoji:'💆',
+   desc:'脚のむくみ・リンパのサポートに。マッサージオイルとして',
+   usage:'topical',
+   oils:[{name:'ゼラニウム',ratio:3},{name:'ジュニパーベリー',ratio:2},{name:'サイプレス',ratio:2}]},
+  {id:'r12', name:'美容スキンケア', category:'女性ケア', emoji:'✨',
+   desc:'エイジングケア・美肌に。美容オイルや化粧水に数滴',
+   usage:'topical',
+   oils:[{name:'フランキンセンス',ratio:3},{name:'ゼラニウム',ratio:2},{name:'ラベンダー',ratio:1}]},
+  {id:'r13', name:'ロマンチックナイト', category:'女性ケア', emoji:'🌹',
+   desc:'女性らしい気分を高める。バスタイムや就寝前に',
+   usage:'both',
+   oils:[{name:'サンダルウッド',ratio:2},{name:'ベルガモット',ratio:2},{name:'イランイラン',ratio:1}]},
+  {id:'r14', name:'免疫ブースター', category:'免疫・体調', emoji:'🛡️',
+   desc:'季節の変わり目の免疫サポートに。ディフューズまたは足裏塗布',
+   usage:'both',
+   oils:[{name:'ワイルドオレンジ',ratio:3},{name:'フランキンセンス',ratio:2},{name:'クローブ',ratio:1}]},
+  {id:'r15', name:'呼吸サポート', category:'免疫・体調', emoji:'🌬️',
+   desc:'鼻・のどのサポートに。胸・背中に塗布またはディフューズ',
+   usage:'both',
+   oils:[{name:'ユーカリプタス',ratio:3},{name:'ペパーミント',ratio:2},{name:'レモン',ratio:1}]},
+  {id:'r16', name:'おなかサポート', category:'免疫・体調', emoji:'🫁',
+   desc:'消化・吐き気が気になるときに。おなかに円を描くように塗布',
+   usage:'topical',
+   oils:[{name:'ジンジャー',ratio:3},{name:'ペパーミント',ratio:2},{name:'レモン',ratio:1}]},
+  {id:'r17', name:'冷え対策ウォーム', category:'免疫・体調', emoji:'🔥',
+   desc:'体を芯から温める。足裏・ふくらはぎへの塗布に',
+   usage:'topical',
+   oils:[{name:'ジンジャー',ratio:3},{name:'ワイルドオレンジ',ratio:3},{name:'シナモン（バーク）',ratio:1}]},
+  {id:'r18', name:'空気の浄化', category:'空間・浄化', emoji:'🌿',
+   desc:'部屋の空気をクリーンに。来客前・換気後のディフューズに',
+   usage:'diffuse',
+   oils:[{name:'レモン',ratio:3},{name:'ティーツリー（メラルーカ）',ratio:2},{name:'ユーカリプタス',ratio:2}]},
+  {id:'r19', name:'森林浴ルーム', category:'空間・浄化', emoji:'🌲',
+   desc:'自宅にいながら森の空気を。グラウンディング・瞑想にも',
+   usage:'diffuse',
+   oils:[{name:'ヒノキ',ratio:3},{name:'サイプレス',ratio:2},{name:'フランキンセンス',ratio:1}]},
+  {id:'r20', name:'キッチンクリーン', category:'空間・浄化', emoji:'🍋',
+   desc:'キッチンの消臭・気分転換に。料理前後のディフューズに',
+   usage:'diffuse',
+   oils:[{name:'レモン',ratio:4},{name:'ワイルドオレンジ',ratio:3},{name:'ペパーミント',ratio:1}]}
+];
+
+var currentTab = 'catalog';
+var selectedOils = [];
+var ratios = {};
+var totalDrops = 6;
+
+// ===== タブ切替 =====
+function switchTab(tab) {
+  currentTab = tab;
+  var tabs = ['catalog','recipe','builder'];
+  for (var i=0;i<tabs.length;i++) {
+    var t = tabs[i];
+    document.getElementById('tab-'+t).className = 'tab-btn' + (t===tab?' active':'');
+  }
+  document.getElementById('view-catalog').style.display = (tab==='catalog')?'':'none';
+  document.getElementById('view-recipe').style.display = (tab==='recipe')?'':'none';
+  document.getElementById('view-builder').style.display = (tab==='builder')?'':'none';
+  document.querySelector('.search-bar').style.display = (tab==='catalog')?'':'none';
+  document.querySelector('.count-bar').style.display = (tab==='catalog')?'':'none';
+}
+
+// ===== 検索 =====
+function expandQuery(q) {
+  var terms = [q];
+  if (SYNONYMS[q]) {
+    var syns = SYNONYMS[q];
+    for (var i=0;i<syns.length;i++) terms.push(syns[i].toLowerCase());
+  }
+  // partial match on synonym keys
+  for (var key in SYNONYMS) {
+    if (key.indexOf(q)>=0 || q.indexOf(key)>=0) {
+      var s2 = SYNONYMS[key];
+      for (var j=0;j<s2.length;j++) terms.push(s2[j].toLowerCase());
+    }
+  }
+  return terms;
+}
+
+function oilMatches(o, terms) {
+  var haystack = (o.ja+o.en+o.benefits.join('')+o.scenes.join('')+o.emotions.join('')+o.desc+o.note).toLowerCase();
+  for (var i=0;i<terms.length;i++) {
+    if (haystack.indexOf(terms[i])>=0) return true;
+  }
+  return false;
+}
+
+document.getElementById('searchInput').addEventListener('input', function() {
+  var q = this.value.trim().toLowerCase();
+  if (!q) { renderCards(OILS); return; }
+  var terms = expandQuery(q);
+  var filtered = OILS.filter(function(o){ return oilMatches(o, terms); });
+  renderCards(filtered);
+});
+
+// ===== カード描画 =====
+function spc(v){return v==='○'?'sp-ok':v==='△'?'sp-warn':'sp-ng';}
+function scls(v){return v==='○'?'s-ok':v==='△'?'s-warn':'s-ng';}
+function slbl(v){return v==='○'?'OK':v==='△'?'要注意':'使用禁止';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function renderCards(list) {
+  var grid = document.getElementById('cardGrid');
+  document.getElementById('countBar').textContent = list.length + ' 件';
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty-state"><span class="e-icon">🌿</span>見つかりませんでした<br><small style="font-size:11px;margin-top:6px;display:block">ひらがなでも検索できます</small></div>';
+    return;
+  }
+  var h='';
+  for (var i=0;i<list.length;i++) {
+    var o=list[i];
+    h+='<div class="oil-card" onclick="openModal(\''+esc(o.id)+'\')">';
+    h+='<div class="card-header">';
+    h+='<div class="card-names"><div class="card-ja">'+esc(o.ja)+'</div><div class="card-en">'+esc(o.en)+'</div></div>';
+    h+='<span class="dil-badge dil-'+esc(o.dil)+'">'+esc(o.dil)+'</span>';
+    h+='</div>';
+    h+='<div class="card-benefits">';
+    if(o.benefits[0]) h+='<div class="card-benefit">'+esc(o.benefits[0])+'</div>';
+    if(o.benefits[1]) h+='<div class="card-benefit">'+esc(o.benefits[1])+'</div>';
+    h+='</div>';
+    h+='<div class="card-safety">';
+    h+='<span class="safety-pill '+spc(o.pregnancy)+'">妊'+esc(o.pregnancy)+'</span>';
+    h+='<span class="safety-pill '+spc(o.kids)+'">子'+esc(o.kids)+'</span>';
+    h+='<span class="card-note">'+esc(o.note)+'</span>';
+    h+='</div></div>';
+  }
+  grid.innerHTML=h;
+}
+
+// ===== 図鑑モーダル =====
+function openModal(id) {
+  var o=null;
+  for(var i=0;i<OILS.length;i++){if(OILS[i].id===id){o=OILS[i];break;}}
+  if(!o)return;
+  var dilLabel=o.dil==='N'?'原液OK':o.dil==='S'?'敏感肌は希釈':'必ず希釈';
+  var dilSC=o.dil==='N'?'s-ok':o.dil==='S'?'s-warn':'s-ng';
+  var dilV=o.dil==='N'?'○':o.dil==='S'?'△':'✕';
+  var h='';
+  h+='<p class="modal-title-en">'+esc(o.en)+'</p>';
+  h+='<h2 class="modal-title-ja">'+esc(o.ja)+'</h2>';
+  h+='<div class="scent-desc">'+esc(o.desc)+'<span class="note-tag">'+esc(o.note)+'ノート</span></div>';
+  h+='<p class="section-label">主な効果・用途</p><div class="benefits-list">';
+  for(var i=0;i<o.benefits.length;i++) h+='<div class="benefit-item">▸ '+esc(o.benefits[i])+'</div>';
+  h+='</div>';
+  h+='<p class="section-label">使い方</p><div class="usage-grid">';
+  h+='<div class="usage-item '+(o.diffuse?'active':'inactive')+'"><span class="u-icon">🌬️</span>芳香浴</div>';
+  h+='<div class="usage-item '+(o.topical?'active':'inactive')+'"><span class="u-icon">💧</span>塗布</div>';
+  h+='<div class="usage-item '+(o.internal?'active':'inactive')+'"><span class="u-icon">🫗</span>摂取</div>';
+  h+='<div class="usage-item '+(o.housework?'active':'inactive')+'"><span class="u-icon">🧹</span>家事</div>';
+  h+='</div>';
+  h+='<p class="section-label">安全性</p><div class="safety-grid">';
+  h+='<div class="safety-item '+scls(o.pregnancy)+'"><span class="s-icon">🤰</span><span class="s-label">妊婦</span><span class="s-value">'+esc(o.pregnancy)+'</span><div class="s-desc">'+slbl(o.pregnancy)+'</div></div>';
+  h+='<div class="safety-item '+scls(o.kids)+'"><span class="s-icon">👶</span><span class="s-label">子供</span><span class="s-value">'+esc(o.kids)+'</span><div class="s-desc">'+slbl(o.kids)+'</div></div>';
+  h+='<div class="safety-item '+dilSC+'"><span class="s-icon">⚗️</span><span class="s-label">希釈</span><span class="s-value">'+dilV+'</span><div class="s-desc">'+dilLabel+'</div></div>';
+  h+='</div>';
+  if(o.caution) h+='<div class="caution-box">⚠️ '+esc(o.caution)+'</div>';
+  h+='<p class="section-label">シーン・気分タグ</p><div class="tags-wrap">';
+  var tags=o.scenes.concat(o.emotions);
+  for(var i=0;i<tags.length;i++) h+='<span class="tag">'+esc(tags[i])+'</span>';
+  h+='</div>';
+  h+='<p class="section-label">相性の良いオイル</p><div class="blend-chips">';
+  for(var i=0;i<o.blends.length;i++) h+='<button class="blend-chip" onclick="searchBy(\''+esc(o.blends[i])+'\')">'+esc(o.blends[i])+'</button>';
+  h+='</div>';
+  document.getElementById('modalBody').innerHTML=h;
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('modalContent').scrollTop=0;
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.getElementById('recipeModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function searchBy(name){
+  closeModal();
+  switchTab('catalog');
+  var input=document.getElementById('searchInput');
+  input.value=name;
+  input.dispatchEvent(new Event('input'));
+}
+
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.getElementById('recipeModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+var _ty=0;
+function addSwipeClose(el) {
+  el.addEventListener('touchstart',function(e){_ty=e.touches[0].clientY;},{passive:true});
+  el.addEventListener('touchend',function(e){
+    if(e.changedTouches[0].clientY-_ty>80&&el.scrollTop===0)closeModal();
+  },{passive:true});
+}
+addSwipeClose(document.getElementById('modalContent'));
+addSwipeClose(document.getElementById('recipeModalContent'));
+
+// ===== レシピ描画 =====
+function renderRecipes() {
+  var categories = [];
+  var catMap = {};
+  for (var i=0;i<RECIPES.length;i++) {
+    var r=RECIPES[i];
+    if (!catMap[r.category]) { catMap[r.category]=true; categories.push(r.category); }
+  }
+  var h='';
+  for (var ci=0;ci<categories.length;ci++) {
+    var cat=categories[ci];
+    h+='<div class="recipe-category"><div class="recipe-cat-title">'+esc(cat)+'</div>';
+    for (var i=0;i<RECIPES.length;i++) {
+      var r=RECIPES[i];
+      if(r.category!==cat) continue;
+      var usageLabel=r.usage==='diffuse'?'芳香浴':r.usage==='topical'?'塗布':'芳香・塗布';
+      h+='<div class="recipe-card" onclick="openRecipeModal(\''+esc(r.id)+'\')">';
+      h+='<div class="recipe-header"><span class="recipe-emoji">'+r.emoji+'</span>';
+      h+='<span class="recipe-name">'+esc(r.name)+'</span>';
+      h+='<span class="recipe-usage-tag">'+usageLabel+'</span></div>';
+      h+='<div class="recipe-desc">'+esc(r.desc)+'</div>';
+      h+='<div class="recipe-oils">';
+      for (var j=0;j<r.oils.length;j++) {
+        h+='<span class="recipe-oil-chip">'+esc(r.oils[j].name)+'<span class="recipe-oil-ratio">×'+r.oils[j].ratio+'</span></span>';
+      }
+      h+='</div></div>';
+    }
+    h+='</div>';
+  }
+  document.getElementById('view-recipe').innerHTML=h;
+}
+
+function openRecipeModal(id) {
+  var r=null;
+  for(var i=0;i<RECIPES.length;i++){if(RECIPES[i].id===id){r=RECIPES[i];break;}}
+  if(!r) return;
+  var total=r.oils.reduce(function(s,o){return s+o.ratio;},0);
+  var usageLabel=r.usage==='diffuse'?'🌬️ 芳香浴':r.usage==='topical'?'💧 塗布':'🌬️ 芳香浴・💧 塗布';
+  var h='';
+  h+='<div style="font-size:36px;text-align:center;padding:8px 0 4px">'+r.emoji+'</div>';
+  h+='<h2 class="modal-title-ja" style="text-align:center">'+esc(r.name)+'</h2>';
+  h+='<p style="text-align:center;font-size:12px;color:var(--sub);margin-bottom:4px">'+esc(r.category)+'</p>';
+  h+='<div class="scent-desc" style="margin-top:12px">'+esc(r.desc)+'<span class="note-tag">'+usageLabel+'</span></div>';
+  h+='<p class="section-label">配合オイルと比率</p>';
+  h+='<div class="recipe-modal-oils">';
+  for(var i=0;i<r.oils.length;i++){
+    var o=r.oils[i];
+    var pct=Math.round(o.ratio/total*100);
+    h+='<div class="rmo-row"><span class="rmo-name">'+esc(o.name)+'</span>';
+    h+='<span class="rmo-ratio">'+o.ratio+'割（約'+pct+'%）</span></div>';
+  }
+  h+='</div>';
+  h+='<p class="section-label">滴数の目安（合計6滴の場合）</p>';
+  h+='<div class="recipe-modal-oils">';
+  for(var i=0;i<r.oils.length;i++){
+    var o=r.oils[i];
+    var drops=Math.round(o.ratio/total*6);
+    h+='<div class="rmo-row"><span class="rmo-name">'+esc(o.name)+'</span>';
+    h+='<span class="rmo-ratio" style="font-weight:700;color:var(--accent)">'+drops+' 滴</span></div>';
+  }
+  h+='</div>';
+  h+='<button class="use-in-builder-btn" onclick="loadRecipeToBuilder(\''+esc(r.id)+'\')">⚗️ ビルダーで開いて調整する</button>';
+  document.getElementById('recipeModalBody').innerHTML=h;
+  document.getElementById('recipeModal').classList.add('open');
+  document.getElementById('recipeModalContent').scrollTop=0;
+  document.body.style.overflow='hidden';
+}
+
+// ===== ビルダー =====
+function renderOilSelector() {
+  var h='';
+  for(var i=0;i<OILS.length;i++){
+    var o=OILS[i];
+    var sel=selectedOils.indexOf(o.ja)>=0;
+    h+='<button class="oil-select-btn'+(sel?' selected':'')+'" onclick="toggleOil(\''+esc(o.ja)+'\')">'+esc(o.ja)+'</button>';
+  }
+  document.getElementById('oilSelector').innerHTML=h;
+}
+
+function toggleOil(name) {
+  var idx=selectedOils.indexOf(name);
+  if(idx>=0){
+    selectedOils.splice(idx,1);
+    delete ratios[name];
+  } else {
+    if(selectedOils.length>=5){alert('最大5種まで選択できます');return;}
+    selectedOils.push(name);
+    ratios[name]=2;
+  }
+  renderOilSelector();
+  renderBuilderSelected();
+  renderResult();
+}
+
+function renderBuilderSelected() {
+  var h='';
+  if(!selectedOils.length){
+    h='<p style="font-size:13px;color:var(--sub);padding:8px 0">上のリストからオイルを選択してください</p>';
+    document.getElementById('builderSelected').innerHTML=h;
+    return;
+  }
+  for(var i=0;i<selectedOils.length;i++){
+    var name=selectedOils[i];
+    var r=ratios[name]||1;
+    h+='<div class="builder-oil-row">';
+    h+='<span class="builder-oil-name">'+esc(name)+'</span>';
+    h+='<div class="builder-ratio-ctrl">';
+    h+='<button class="ratio-btn" onclick="changeRatio(\''+esc(name)+'\',-1)">−</button>';
+    h+='<span class="ratio-val" id="rv-'+i+'">'+r+'</span>';
+    h+='<button class="ratio-btn" onclick="changeRatio(\''+esc(name)+'\',1)">+</button>';
+    h+='</div>';
+    h+='<button class="builder-remove" onclick="toggleOil(\''+esc(name)+'\')">✕</button>';
+    h+='</div>';
+  }
+  document.getElementById('builderSelected').innerHTML=h;
+}
+
+function changeRatio(name,delta){
+  ratios[name]=Math.max(1,Math.min(10,(ratios[name]||1)+delta));
+  renderBuilderSelected();
+  renderResult();
+}
+
+function setRecommendedDrops(n){
+  document.getElementById('totalDrops').value=n;
+  renderResult();
+}
+function renderResult(){
+  var total=0;
+  for(var i=0;i<selectedOils.length;i++) total+=ratios[selectedOils[i]]||1;
+  var drops=parseInt(document.getElementById('totalDrops').value)||6;
+  if(!selectedOils.length){
+    document.getElementById('resultArea').innerHTML='<p style="font-size:13px;color:var(--sub)">オイルを選ぶと滴数が計算されます</p>';
+    return;
+  }
+  var exact=[];
+  var sumFloor=0;
+  for(var i=0;i<selectedOils.length;i++){
+    var r=ratios[selectedOils[i]]||1;
+    var e=r/total*drops;
+    exact.push({name:selectedOils[i],val:e,floor:Math.floor(e),rem:e-Math.floor(e),ratio:r});
+    sumFloor+=Math.floor(e);
+  }
+  var remainder=drops-sumFloor;
+  exact.sort(function(a,b){return b.rem-a.rem;});
+  for(var i=0;i<remainder;i++) exact[i].floor+=1;
+  exact.sort(function(a,b){return b.val-a.val;});
+  var maxDiff=0;
+  for(var i=0;i<exact.length;i++){
+    var diff=Math.abs(exact[i].floor/drops*100 - exact[i].ratio/total*100);
+    if(diff>maxDiff) maxDiff=diff;
+  }
+  var h='';
+  if(maxDiff>5){
+    h+='<div class="warn-box">';
+    h+='<span class="warn-text">&#9888; この比率を正確に表すには <strong>'+total+'滴</strong> が最適です</span>';
+    h+='<button class="warn-btn" onclick="setRecommendedDrops('+total+')">→ '+total+'滴に変更する</button>';
+    h+='</div>';
+  }
+  h+='<div class="result-list">';
+  for(var i=0;i<exact.length;i++){
+    var item=exact[i];
+    var pct=Math.round(item.floor/drops*100);
+    h+='<div class="result-row">';
+    h+='<span class="result-oil">'+esc(item.name)+'</span>';
+    h+='<span class="result-drops">'+item.floor+'<span> 滴</span></span>';
+    h+='<span class="result-pct">'+pct+'%</span>';
+    h+='</div>';
+  }
+  h+='</div>';
+  document.getElementById('resultArea').innerHTML=h;
+}
+
+document.getElementById('totalDrops').addEventListener('input',renderResult);
+
+function loadRecipeToBuilder(id){
+  closeModal();
+  var r=null;
+  for(var i=0;i<RECIPES.length;i++){if(RECIPES[i].id===id){r=RECIPES[i];break;}}
+  if(!r)return;
+  selectedOils=[];
+  ratios={};
+  for(var i=0;i<r.oils.length;i++){
+    selectedOils.push(r.oils[i].name);
+    ratios[r.oils[i].name]=r.oils[i].ratio;
+  }
+  switchTab('builder');
+  renderOilSelector();
+  renderBuilderSelected();
+  renderResult();
+}
+
+// 初期化
+renderCards(OILS);
+renderRecipes();
+renderOilSelector();
+renderBuilderSelected();
+renderResult();
+
+</script>
+</body>
+</html>
